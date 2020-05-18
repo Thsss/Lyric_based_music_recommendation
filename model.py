@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import os
 import gensim
+import pickle
 path = os.getcwd()
 
 save_model_name = 'd2v_10k.model'
@@ -29,9 +30,17 @@ def recom_music(lyrics, train_corpus):
 
 
 if __name__ == '__main__':
-    lyrics = pd.read_csv(path + '\\trainSet_new.csv')
+    lyrics = pd.read_csv(path + '/trainSet_new.csv')
     d2v_data = pd.Series(lyrics.iloc[:, 0])
+
     train_corpus = trans2vec(d2v_data)  # 获得模型训练corpus
+    # Its important to use binary mode 
+    # dbfile = open('train_corpus', 'ab') 
+      
+    # # source, destination 
+    # pickle.dump(train_corpus, dbfile)                      
+    # dbfile.close() 
+
     model = gensim.models.doc2vec.Doc2Vec.load(saved_path)  # 加载模型
     sim_songs = recom_music(lyrics, train_corpus)  # 找到这首歌的相似歌曲id
     print(sim_songs)
