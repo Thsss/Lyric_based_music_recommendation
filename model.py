@@ -9,6 +9,7 @@ saved_path = path + "/doc2vec_v2.model.bin"
 
 
 def trans2vec(d2v_data):
+    # 转换原始数据为模型训练和infer所需格式
     train = []
     for i, s in enumerate(d2v_data):
         tokens = s.split(' ')
@@ -17,22 +18,20 @@ def trans2vec(d2v_data):
     return train
 
 
-def recom_music(train_corpus, doc_id):
-
+def recom_music(lyrics, train_corpus):
+    song_name = input('请输入歌曲名:')
+    id = lyrics.loc[lyrics['song_name'] == song_name].index.tolist()
+    doc_id = id[0]  # 获得歌曲对应index
     inferred_docvec = model.infer_vector(train_corpus[doc_id].words)
-    sim_songs = model.docvecs.most_similar([inferred_docvec], topn=5)
+    sim_song = model.docvecs.most_similar([inferred_docvec], topn=5)
+    sim_songs = [(lyrics['song_name'].iloc[sim_song[i][0]],lyrics['singer'].iloc[sim_song[i][0]], sim_song[i][1]) for i in range(5)]
     return sim_songs
-#     print('%s:\n %s ' % (model, sim_songs))
-#     print(lyrics.iloc[doc_id])
-#     print(lyrics.iloc[sim_songs[1][0]])
+
 
 if __name__ == '__main__':
-    lyrics = pd.read_csv(path + '\\trainSet.csv')
+    lyrics = pd.read_csv(path + '\\trainSet_new.csv')
     d2v_data = pd.Series(lyrics.iloc[:, 0])
     train_corpus = trans2vec(d2v_data)  # 获得模型训练corpus
     model = gensim.models.doc2vec.Doc2Vec.load(saved_path)  # 加载模型
-    doc_id = np.random.randint(model.docvecs.count)  # 随机选择一首歌
-    sim_songs = recom_music(train_corpus, doc_id)  # 找到这首歌的相似歌曲id
+    sim_songs = recom_music(lyrics, train_corpus)  # 找到这首歌的相似歌曲id
     print(sim_songs)
-    # print(lyrics.iloc[doc_id])
-    # print(lyrics.iloc[sim_songs[1][0]])
