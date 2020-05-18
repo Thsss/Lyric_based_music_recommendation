@@ -4,8 +4,8 @@ import os
 import gensim
 path = os.getcwd()
 
-save_model_name = 'doc2vec_v2.model'
-saved_path = path + "/doc2vec_v2.model.bin"
+save_model_name = 'd2v_10k.model'
+saved_path = path + "/d2v_10k.model.bin"
 
 
 def trans2vec(d2v_data):
